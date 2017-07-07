@@ -1,0 +1,20 @@
+.gdbar img {
+  width: 350px !important;
+  height: 100px !important;
+  margin: 8px 8px;
+}
+
+.gdbar {
+  width: 380px !important;
+  height: 120px !important;
+}
+
+slides > slide:not(.nobackground):before {
+  width: 105px;
+  height: 30px;
+  background-size: 105px 30px;
+}
+
+slides > slide.backdrop {
+  background: Azure
+}
