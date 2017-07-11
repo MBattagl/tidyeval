@@ -96,7 +96,7 @@
     }
   </style>
 
-  <link href="data:text/css;charset=utf-8,%2Egdbar%20img%20%7B%0Awidth%3A%20350px%20%21important%3B%0Aheight%3A%20100px%20%21important%3B%0Amargin%3A%208px%208px%3B%0A%7D%0A%2Egdbar%20%7B%0Awidth%3A%20380px%20%21important%3B%0Aheight%3A%20120px%20%21important%3B%0A%7D%0Aslides%20%3E%20slide%3Anot%28%2Enobackground%29%3Abefore%20%7B%0Awidth%3A%20105px%3B%0Aheight%3A%2030px%3B%0Abackground%2Dsize%3A%20105px%2030px%3B%0A%7D%0Aslides%20%3E%20slide%2Ebackdrop%20%7B%0Abackground%3A%20Azure%0A%7D" rel="stylesheet" type="text/css" />
+  <link href="data:text/css;charset=utf-8,%2Egdbar%20img%20%7B%0Awidth%3A%20350px%20%21important%3B%0Aheight%3A%20100px%20%21important%3B%0Amargin%3A%208px%208px%3B%0A%7D%0A%2Egdbar%20%7B%0Awidth%3A%20380px%20%21important%3B%0Aheight%3A%20120px%20%21important%3B%0A%7D%0Aslides%20%3E%20slide%3Anot%28%2Enobackground%29%3Abefore%20%7B%0Awidth%3A%20105px%3B%0Aheight%3A%2030px%3B%0Abackground%2Dsize%3A%20105px%2030px%3B%0A%7D%0Aslides%20%3E%20slide%2Ebackdrop%20%7B%0Abackground%3A%20Azure%0A%7D%20%40font%2Dface%20%7Bfont%2Dsize%20%3D%2025px%3B%7D%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -132,7 +132,7 @@ head(mtcars)</pre>
 
 <pre class = 'prettyprint lang-r'>mtcars %&gt;%
   filter(gear == 4) %&gt;%
-  head() %&gt;%
+  head(n=3) %&gt;%
   kable()</pre>
 
 <table class = 'rmdtable'>
@@ -152,7 +152,7 @@ head(mtcars)</pre>
 <tr class="odd">
 <td align="right">21.0</td>
 <td align="right">6</td>
-<td align="right">160.0</td>
+<td align="right">160</td>
 <td align="right">110</td>
 <td align="right">3.90</td>
 <td align="right">2.620</td>
@@ -165,7 +165,7 @@ head(mtcars)</pre>
 <tr class="even">
 <td align="right">21.0</td>
 <td align="right">6</td>
-<td align="right">160.0</td>
+<td align="right">160</td>
 <td align="right">110</td>
 <td align="right">3.90</td>
 <td align="right">2.875</td>
@@ -178,7 +178,7 @@ head(mtcars)</pre>
 <tr class="odd">
 <td align="right">22.8</td>
 <td align="right">4</td>
-<td align="right">108.0</td>
+<td align="right">108</td>
 <td align="right">93</td>
 <td align="right">3.85</td>
 <td align="right">2.320</td>
@@ -188,45 +188,6 @@ head(mtcars)</pre>
 <td align="right">4</td>
 <td align="right">1</td>
 </tr>
-<tr class="even">
-<td align="right">24.4</td>
-<td align="right">4</td>
-<td align="right">146.7</td>
-<td align="right">62</td>
-<td align="right">3.69</td>
-<td align="right">3.190</td>
-<td align="right">20.00</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="odd">
-<td align="right">22.8</td>
-<td align="right">4</td>
-<td align="right">140.8</td>
-<td align="right">95</td>
-<td align="right">3.92</td>
-<td align="right">3.150</td>
-<td align="right">22.90</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="right">19.2</td>
-<td align="right">6</td>
-<td align="right">167.6</td>
-<td align="right">123</td>
-<td align="right">3.92</td>
-<td align="right">3.440</td>
-<td align="right">18.30</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">4</td>
-</tr>
 </table>
 
 </article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym-1" class="smaller ">
@@ -235,7 +196,7 @@ head(mtcars)</pre>
 
 mtcars %&gt;%
   filter(x == 4) %&gt;%
-  head() %&gt;%
+  head(n=3) %&gt;%
   kable()</pre>
 
 <p>mpg cyl disp hp drat wt qsec vs am gear carb &#8212;- &#8212;- &#8212;&#8211; &#8212; &#8212;&#8211; &#8212; &#8212;&#8211; &#8212; &#8212; &#8212;&#8211; &#8212;&#8211;</p>
@@ -243,16 +204,19 @@ mtcars %&gt;%
 <pre class = 'prettyprint lang-r'>expr(
   mtcars %&gt;%
     filter(x == 4) %&gt;%
-    head() %&gt;%
+    head(n=3) %&gt;%
     kable()
 )</pre>
 
-<pre >## mtcars %&gt;% filter(x == 4) %&gt;% head() %&gt;% kable()</pre>
+<pre >## mtcars %&gt;% filter(x == 4) %&gt;% head(n = 3) %&gt;% kable()</pre>
+
+<p>Filter ignores that x has an assigned value, &quot;gear&quot;. We would like x to be evaluated (replaced with &quot;gear&quot;) prior to being used by filter.</p>
 
 </article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym-2" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>mtcars %&gt;%
   filter((!!x) == 4) %&gt;%
+  head(n=3) %&gt;%
   kable()</pre>
 
 <p>mpg cyl disp hp drat wt qsec vs am gear carb &#8212;- &#8212;- &#8212;&#8211; &#8212; &#8212;&#8211; &#8212; &#8212;&#8211; &#8212; &#8212; &#8212;&#8211; &#8212;&#8211;</p>
@@ -260,10 +224,11 @@ mtcars %&gt;%
 <pre class = 'prettyprint lang-r'>expr(
   mtcars %&gt;%
     filter((!!x) == 4) %&gt;%
-  kable()
+    head(n=3) %&gt;%
+    kable()
 )</pre>
 
-<pre >## mtcars %&gt;% filter((&quot;gear&quot;) == 4) %&gt;% kable()</pre>
+<pre >## mtcars %&gt;% filter((&quot;gear&quot;) == 4) %&gt;% head(n = 3) %&gt;% kable()</pre>
 
 <p>!! makes R evaluate x a step before evaluating the whole expression</p>
 
@@ -275,7 +240,7 @@ mtcars %&gt;%
 
 mtcars %&gt;%
   filter((!!x) == 4) %&gt;%
-  head() %&gt;%
+  head(n=3) %&gt;%
   kable()</pre>
 
 <table class = 'rmdtable'>
@@ -295,7 +260,7 @@ mtcars %&gt;%
 <tr class="odd">
 <td align="right">21.0</td>
 <td align="right">6</td>
-<td align="right">160.0</td>
+<td align="right">160</td>
 <td align="right">110</td>
 <td align="right">3.90</td>
 <td align="right">2.620</td>
@@ -308,7 +273,7 @@ mtcars %&gt;%
 <tr class="even">
 <td align="right">21.0</td>
 <td align="right">6</td>
-<td align="right">160.0</td>
+<td align="right">160</td>
 <td align="right">110</td>
 <td align="right">3.90</td>
 <td align="right">2.875</td>
@@ -321,7 +286,7 @@ mtcars %&gt;%
 <tr class="odd">
 <td align="right">22.8</td>
 <td align="right">4</td>
-<td align="right">108.0</td>
+<td align="right">108</td>
 <td align="right">93</td>
 <td align="right">3.85</td>
 <td align="right">2.320</td>
@@ -330,45 +295,6 @@ mtcars %&gt;%
 <td align="right">1</td>
 <td align="right">4</td>
 <td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="right">24.4</td>
-<td align="right">4</td>
-<td align="right">146.7</td>
-<td align="right">62</td>
-<td align="right">3.69</td>
-<td align="right">3.190</td>
-<td align="right">20.00</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="odd">
-<td align="right">22.8</td>
-<td align="right">4</td>
-<td align="right">140.8</td>
-<td align="right">95</td>
-<td align="right">3.92</td>
-<td align="right">3.150</td>
-<td align="right">22.90</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="right">19.2</td>
-<td align="right">6</td>
-<td align="right">167.6</td>
-<td align="right">123</td>
-<td align="right">3.92</td>
-<td align="right">3.440</td>
-<td align="right">18.30</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">4</td>
 </tr>
 </table>
 
@@ -377,21 +303,21 @@ mtcars %&gt;%
 <pre class = 'prettyprint lang-r'>expr(
   mtcars %&gt;%
     filter((!!x) == 4) %&gt;%
-    head %&gt;%
+    head(n=3) %&gt;%
     kable()
 )</pre>
 
-<pre >## mtcars %&gt;% filter((gear) == 4) %&gt;% head %&gt;% kable()</pre>
-
-<p>If we want our input to be plain text, not a string, use quo</p>
+<pre >## mtcars %&gt;% filter((gear) == 4) %&gt;% head(n = 3) %&gt;% kable()</pre>
 
 </article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym-5" class="smaller ">
+
+<p>If we want our input to be plain text, not a string, use quo</p>
 
 <pre class = 'prettyprint lang-r'>x &lt;- quo(gear)
 
 mtcars %&gt;%
   filter((!!x) == 4) %&gt;%
-  head() %&gt;%
+  head(n=3) %&gt;%
   kable()</pre>
 
 <table class = 'rmdtable'>
@@ -411,7 +337,7 @@ mtcars %&gt;%
 <tr class="odd">
 <td align="right">21.0</td>
 <td align="right">6</td>
-<td align="right">160.0</td>
+<td align="right">160</td>
 <td align="right">110</td>
 <td align="right">3.90</td>
 <td align="right">2.620</td>
@@ -424,7 +350,7 @@ mtcars %&gt;%
 <tr class="even">
 <td align="right">21.0</td>
 <td align="right">6</td>
-<td align="right">160.0</td>
+<td align="right">160</td>
 <td align="right">110</td>
 <td align="right">3.90</td>
 <td align="right">2.875</td>
@@ -437,7 +363,7 @@ mtcars %&gt;%
 <tr class="odd">
 <td align="right">22.8</td>
 <td align="right">4</td>
-<td align="right">108.0</td>
+<td align="right">108</td>
 <td align="right">93</td>
 <td align="right">3.85</td>
 <td align="right">2.320</td>
@@ -447,56 +373,23 @@ mtcars %&gt;%
 <td align="right">4</td>
 <td align="right">1</td>
 </tr>
-<tr class="even">
-<td align="right">24.4</td>
-<td align="right">4</td>
-<td align="right">146.7</td>
-<td align="right">62</td>
-<td align="right">3.69</td>
-<td align="right">3.190</td>
-<td align="right">20.00</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="odd">
-<td align="right">22.8</td>
-<td align="right">4</td>
-<td align="right">140.8</td>
-<td align="right">95</td>
-<td align="right">3.92</td>
-<td align="right">3.150</td>
-<td align="right">22.90</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="right">19.2</td>
-<td align="right">6</td>
-<td align="right">167.6</td>
-<td align="right">123</td>
-<td align="right">3.92</td>
-<td align="right">3.440</td>
-<td align="right">18.30</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">4</td>
-</tr>
 </table>
 
-</article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym-6" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Definitions</h2></hgroup><article  id="definitions" class="smaller ">
 
-<pre class = 'prettyprint lang-r'>expr(
-  mtcars %&gt;%
-    filter((!!x) == 4) %&gt;%
-    kable()
-)</pre>
+<p><code>!!</code>: The <code>!!</code> operator, or bangbang, tells R to evaluate the object prior to using it.</p>
 
-<pre >## mtcars %&gt;% filter((~gear) == 4) %&gt;% kable()</pre>
+<p><code>sym()</code>: takes string input and converts to symbol</p>
+
+<p><code>quo()</code>: takes unquoted R code and returns expression ready to be evaluated</p>
+
+<p><code>enquo()</code>: takes symbol referring to function argument, works similarly to <code>quo()</code></p>
+
+</article></slide><slide class=''><hgroup><h2>tl;dr</h2></hgroup><article  id="tldr" class="smaller ">
+
+<p>Outside function: sym and quo</p>
+
+<p>Inside function: sym and enquo</p>
 
 </article></slide><slide class=''><hgroup><h2>Enquo and sym example</h2></hgroup><article  id="enquo-and-sym-example" class="smaller ">
 
@@ -531,6 +424,7 @@ mtcars %&gt;%
 </article></slide><slide class=''><hgroup><h2>Enquo and sym example</h2></hgroup><article  id="enquo-and-sym-example-1" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>categorical_summary &lt;- function(df, count_var) {
+
   count_var &lt;- enquo(count_var)
   
   df %&gt;% 
@@ -543,7 +437,7 @@ mtcars %&gt;%
 </article></slide><slide class=''><hgroup><h2>Enquo and sym example</h2></hgroup><article  id="enquo-and-sym-example-2" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>mtcars %&gt;% 
-  categorical_summary(cyl) </pre>
+  categorical_summary(cyl)</pre>
 
 <table class = 'rmdtable'>
 <tr class="header">
@@ -829,8 +723,6 @@ summariser(mtcars, vs == 0, cyl, hp)</pre>
 </tr>
 </table>
 
-<p>This does what we expect, but how do we dynamically name the summary variable to match the input?</p>
-
 </article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-8" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>summariser &lt;- function(df, expression, group_var, summary_var) {
@@ -961,9 +853,121 @@ summariser(mtcars, vs == 0, cyl, hp)</pre>
 
 </article></slide><slide class=''><hgroup><h2>Quos example</h2></hgroup><article  id="quos-example" class="smaller ">
 
-<pre class = 'prettyprint lang-r'>example &lt;- tibble(group=c(rep(&quot;A&quot;,10), rep(&quot;B&quot;,10)), val = c(1:5, NA, 7:19, 1000))
+<pre class = 'prettyprint lang-r'>g &lt;- c(&quot;gear&quot;, &quot;cyl&quot;)
 
-grouped_mean &lt;- function(df, grouping_var, val_var, ...) {
+multiple_group &lt;- function(df, val_var, ...) {
+  
+  val_var &lt;- enquo(val_var)
+  groupings &lt;- syms(groupings)
+  
+  df %&gt;%
+    group_by(!!!groupings) %&gt;%
+    summarise(mean(!!val_var))
+  
+}
+
+multiple_group(mtcars, g, hp)</pre>
+
+<pre >## Error in lapply(.x, .f, ...): object &#39;groupings&#39; not found</pre>
+
+</article></slide><slide class=''><hgroup><h2>Quos example</h2></hgroup><article  id="quos-example-1" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>g1 &lt;- c(&quot;gear&quot;, &quot;cyl&quot;)
+g2 &lt;- c(&quot;gear&quot;)
+
+multiple_group &lt;- function(df, val_var, groupings) {
+  
+  val_var &lt;- enquo(val_var)
+  groupings &lt;- syms(groupings)
+  
+  df %&gt;%
+    group_by(!!!groupings) %&gt;%
+    summarise(mean(!!val_var))
+  
+}
+
+multiple_group(mtcars, hp, g1)</pre>
+
+<pre >## # A tibble: 8 x 3
+## # Groups:   gear [?]
+##    gear   cyl `mean(hp)`
+##   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+## 1     3     4    97.0000
+## 2     3     6   107.5000
+## 3     3     8   194.1667
+## 4     4     4    76.0000
+## 5     4     6   116.5000
+## 6     5     4   102.0000
+## 7     5     6   175.0000
+## 8     5     8   299.5000</pre>
+
+<pre class = 'prettyprint lang-r'>multiple_group(mtcars, hp, g2)</pre>
+
+<pre >## # A tibble: 3 x 2
+##    gear `mean(hp)`
+##   &lt;dbl&gt;      &lt;dbl&gt;
+## 1     3   176.1333
+## 2     4    89.5000
+## 3     5   195.6000</pre>
+
+<pre class = 'prettyprint lang-r'>multiple_group &lt;- function(df, val_var, ...) {
+  
+  val_var &lt;- enquo(val_var)
+  groupings &lt;- quos(...)
+  
+  df %&gt;%
+    group_by(!!!groupings) %&gt;%
+    summarise(mean(!!val_var))
+  
+}
+
+multiple_group(mtcars, hp, gear)</pre>
+
+<pre >## # A tibble: 3 x 2
+##    gear `mean(hp)`
+##   &lt;dbl&gt;      &lt;dbl&gt;
+## 1     3   176.1333
+## 2     4    89.5000
+## 3     5   195.6000</pre>
+
+<pre class = 'prettyprint lang-r'>multiple_group(mtcars, hp, gear, cyl)</pre>
+
+<pre >## # A tibble: 8 x 3
+## # Groups:   gear [?]
+##    gear   cyl `mean(hp)`
+##   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+## 1     3     4    97.0000
+## 2     3     6   107.5000
+## 3     3     8   194.1667
+## 4     4     4    76.0000
+## 5     4     6   116.5000
+## 6     5     4   102.0000
+## 7     5     6   175.0000
+## 8     5     8   299.5000</pre>
+
+</article></slide><slide class=''><hgroup><h2>Quos example 2</h2></hgroup><article  id="quos-example-2" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>(example &lt;- tibble(group=c(rep(&quot;A&quot;,6), rep(&quot;B&quot;,6)), val = c(1:5, NA, 7:11, 1000)))</pre>
+
+<pre >## # A tibble: 12 x 2
+##    group   val
+##    &lt;chr&gt; &lt;dbl&gt;
+##  1     A     1
+##  2     A     2
+##  3     A     3
+##  4     A     4
+##  5     A     5
+##  6     A    NA
+##  7     B     7
+##  8     B     8
+##  9     B     9
+## 10     B    10
+## 11     B    11
+## 12     B  1000</pre>
+
+</article></slide><slide class=''><hgroup><h2>Quos example 2</h2></hgroup><article  id="quos-example-2-1" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>grouped_mean &lt;- function(df, grouping_var, val_var, ...) {
   
   args &lt;- quos(...)
   grouping_var &lt;- enquo(grouping_var)
@@ -976,7 +980,7 @@ grouped_mean &lt;- function(df, grouping_var, val_var, ...) {
   
 }</pre>
 
-</article></slide><slide class=''><hgroup><h2>Quos example</h2></hgroup><article  id="quos-example-1" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Quos example 2</h2></hgroup><article  id="quos-example-2-2" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>grouped_mean(example, group, val)</pre>
 
@@ -991,7 +995,7 @@ grouped_mean &lt;- function(df, grouping_var, val_var, ...) {
 </tr>
 <tr class="even">
 <td align="left">B</td>
-<td align="right">113.5</td>
+<td align="right">174.1667</td>
 </tr>
 </table>
 
@@ -1004,15 +1008,17 @@ grouped_mean &lt;- function(df, grouping_var, val_var, ...) {
 </tr>
 <tr class="odd">
 <td align="left">A</td>
-<td align="right">5.444444</td>
+<td align="right">3.0000</td>
 </tr>
 <tr class="even">
 <td align="left">B</td>
-<td align="right">113.500000</td>
+<td align="right">174.1667</td>
 </tr>
 </table>
 
-<pre class = 'prettyprint lang-r'>grouped_mean(example, group, val, trim = .1)</pre>
+</article></slide><slide class=''><hgroup><h2>Quos example 2</h2></hgroup><article  id="quos-example-2-3" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>grouped_mean(example, group, val, trim = .2)</pre>
 
 <table class = 'rmdtable'>
 <tr class="header">
@@ -1025,11 +1031,11 @@ grouped_mean &lt;- function(df, grouping_var, val_var, ...) {
 </tr>
 <tr class="even">
 <td align="left">B</td>
-<td align="right">15.5</td>
+<td align="right">9.5</td>
 </tr>
 </table>
 
-<pre class = 'prettyprint lang-r'>grouped_mean(example, group, val, na.rm = TRUE, trim = .1)</pre>
+<pre class = 'prettyprint lang-r'>grouped_mean(example, group, val, na.rm = TRUE, trim = .2)</pre>
 
 <table class = 'rmdtable'>
 <tr class="header">
@@ -1038,11 +1044,11 @@ grouped_mean &lt;- function(df, grouping_var, val_var, ...) {
 </tr>
 <tr class="odd">
 <td align="left">A</td>
-<td align="right">5.444444</td>
+<td align="right">3.0</td>
 </tr>
 <tr class="even">
 <td align="left">B</td>
-<td align="right">15.500000</td>
+<td align="right">9.5</td>
 </tr>
 </table></article></slide>
 

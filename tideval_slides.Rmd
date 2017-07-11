@@ -26,12 +26,13 @@ data(mtcars)
 head(mtcars)
 ```
 
+
 ## Basic intro to !! quo and sym
 
 ```{r}
 mtcars %>%
   filter(gear == 4) %>%
-  head() %>%
+  head(n=3) %>%
   kable()
 ```
 
@@ -42,28 +43,32 @@ x <- "gear"
 
 mtcars %>%
   filter(x == 4) %>%
-  head() %>%
+  head(n=3) %>%
   kable()
 
 expr(
   mtcars %>%
     filter(x == 4) %>%
-    head() %>%
+    head(n=3) %>%
     kable()
 )
 ```
+
+Filter ignores that x has an assigned value, "gear". We would like x to be evaluated (replaced with "gear") prior to being used by filter.
 
 ## Basic intro to !! quo and sym
 
 ```{r}
 mtcars %>%
   filter((!!x) == 4) %>%
+  head(n=3) %>%
   kable()
 
 expr(
   mtcars %>%
     filter((!!x) == 4) %>%
-  kable()
+    head(n=3) %>%
+    kable()
 )
 ```
 
@@ -78,7 +83,7 @@ x <- sym("gear")
 
 mtcars %>%
   filter((!!x) == 4) %>%
-  head() %>%
+  head(n=3) %>%
   kable()
 ```
 
@@ -88,33 +93,40 @@ mtcars %>%
 expr(
   mtcars %>%
     filter((!!x) == 4) %>%
-    head %>%
+    head(n=3) %>%
     kable()
 )
 ```
 
-If we want our input to be plain text, not a string, use quo
-
 ## Basic intro to !! quo and sym
+
+If we want our input to be plain text, not a string, use quo
 
 ```{r}
 x <- quo(gear)
 
 mtcars %>%
   filter((!!x) == 4) %>%
-  head() %>%
+  head(n=3) %>%
   kable()
 ```
 
-## Basic intro to !! quo and sym
 
-```{r}
-expr(
-  mtcars %>%
-    filter((!!x) == 4) %>%
-    kable()
-)
-```
+## Definitions
+
+`!!`: The `!!` operator, or bangbang, tells R to evaluate the object prior to using it. 
+
+`sym()`: takes string input and converts to symbol
+
+`quo()`: takes unquoted R code and returns expression ready to be evaluated
+
+`enquo()`: takes symbol referring to function argument, works similarly to `quo()`
+
+## tl;dr
+
+Outside function: sym and quo
+
+Inside function: sym and enquo
 
 ## Enquo and sym example
 
@@ -129,6 +141,7 @@ mtcars %>%
 
 ```{r}
 categorical_summary <- function(df, count_var) {
+
   count_var <- enquo(count_var)
   
   df %>% 
@@ -143,7 +156,7 @@ categorical_summary <- function(df, count_var) {
 
 ```{r}
 mtcars %>% 
-  categorical_summary(cyl) 
+  categorical_summary(cyl)
 
 mtcars %>% 
   categorical_summary("cyl")
@@ -304,8 +317,6 @@ summariser <- function(df, expression, group_var, summary_var) {
 summariser(mtcars, vs == 0, cyl, hp)
 ```
 
-This does what we expect, but how do we dynamically name the summary variable to match the input?
-
 ## Bigger Example
 
 ```{r}
@@ -412,12 +423,78 @@ summariser(mtcars, vs == 0, cyl, hp)
 
 The quo_name function replaces the quosure ~hp with "hp"
 
+## Quos example
+
+```{r}
+
+g <- c("gear", "cyl")
+
+multiple_group <- function(df, val_var, ...) {
+  
+  val_var <- enquo(val_var)
+  groupings <- syms(groupings)
+  
+  df %>%
+    group_by(!!!groupings) %>%
+    summarise(mean(!!val_var))
+  
+}
+
+multiple_group(mtcars, g, hp)
+
+```
 
 ## Quos example
 
 ```{r}
-example <- tibble(group=c(rep("A",10), rep("B",10)), val = c(1:5, NA, 7:19, 1000))
 
+g1 <- c("gear", "cyl")
+g2 <- c("gear")
+
+multiple_group <- function(df, val_var, groupings) {
+  
+  val_var <- enquo(val_var)
+  groupings <- syms(groupings)
+  
+  df %>%
+    group_by(!!!groupings) %>%
+    summarise(mean(!!val_var))
+  
+}
+
+multiple_group(mtcars, hp, g1)
+multiple_group(mtcars, hp, g2)
+
+```
+
+
+```{r}
+multiple_group <- function(df, val_var, ...) {
+  
+  val_var <- enquo(val_var)
+  groupings <- quos(...)
+  
+  df %>%
+    group_by(!!!groupings) %>%
+    summarise(mean(!!val_var))
+  
+}
+
+multiple_group(mtcars, hp, gear)
+multiple_group(mtcars, hp, gear, cyl)
+
+```
+
+
+## Quos example 2
+
+```{r}
+(example <- tibble(group=c(rep("A",6), rep("B",6)), val = c(1:5, NA, 7:11, 1000)))
+```
+
+## Quos example 2
+
+```{r}
 grouped_mean <- function(df, grouping_var, val_var, ...) {
   
   args <- quos(...)
@@ -432,11 +509,17 @@ grouped_mean <- function(df, grouping_var, val_var, ...) {
 }
 ```
 
-## Quos example
+## Quos example 2
 
 ```{r}
 grouped_mean(example, group, val)
 grouped_mean(example, group, val, na.rm = TRUE)
-grouped_mean(example, group, val, trim = .1)
-grouped_mean(example, group, val, na.rm = TRUE, trim = .1)
 ```
+
+## Quos example 2
+
+```{r}
+grouped_mean(example, group, val, trim = .2)
+grouped_mean(example, group, val, na.rm = TRUE, trim = .2)
+```
+
