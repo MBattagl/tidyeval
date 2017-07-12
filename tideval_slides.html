@@ -96,7 +96,7 @@
     }
   </style>
 
-  <link href="data:text/css;charset=utf-8,%2Egdbar%20img%20%7B%0Awidth%3A%20350px%20%21important%3B%0Aheight%3A%20100px%20%21important%3B%0Amargin%3A%208px%208px%3B%0A%7D%0A%2Egdbar%20%7B%0Awidth%3A%20380px%20%21important%3B%0Aheight%3A%20120px%20%21important%3B%0A%7D%0Aslides%20%3E%20slide%3Anot%28%2Enobackground%29%3Abefore%20%7B%0Awidth%3A%20105px%3B%0Aheight%3A%2030px%3B%0Abackground%2Dsize%3A%20105px%2030px%3B%0A%7D%0Aslides%20%3E%20slide%2Ebackdrop%20%7B%0Abackground%3A%20Azure%0A%7D%20%40font%2Dface%20%7Bfont%2Dsize%20%3D%2025px%3B%7D%0A" rel="stylesheet" type="text/css" />
+  <link href="data:text/css;charset=utf-8,%2Egdbar%20img%20%7B%0Awidth%3A%20350px%20%21important%3B%0Aheight%3A%20100px%20%21important%3B%0Amargin%3A%208px%208px%3B%0A%7D%0A%2Egdbar%20%7B%0Awidth%3A%20380px%20%21important%3B%0Aheight%3A%20120px%20%21important%3B%0A%7D%0Aslides%20%3E%20slide%3Anot%28%2Enobackground%29%3Abefore%20%7B%0Awidth%3A%20105px%3B%0Aheight%3A%2030px%3B%0Abackground%2Dsize%3A%20105px%2030px%3B%0A%7D%0Aslides%20%3E%20slide%2Ebackdrop%20%7B%0Abackground%3A%20Azure%0A%7D" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -128,7 +128,111 @@ head(mtcars)</pre>
 ## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
 ## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</pre>
 
-</article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Important Concepts</h2></hgroup><article  id="important-concepts" class="smaller ">
+
+<ul>
+<li><p>Standard vs Non-Standard Evalulation</p></li>
+<li><p>Quosures</p></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Standard vs Non-Standard Evalulation</h2></hgroup><article  id="standard-vs-non-standard-evalulation" class="smaller ">
+
+<p>Standard evaluation: R passes arguments by value.</p>
+
+<p>Non-standard evaluation (NSE): Catch-all term that means anything other than standard evaluation.</p>
+
+<p>Dplyr NSE: Allows objects that do not exist in global environment as inputs.</p>
+
+<pre class = 'prettyprint lang-r'>mtcars %&gt;%
+  select(cyl) %&gt;%
+  head(n=3)</pre>
+
+<pre >##               cyl
+## Mazda RX4       6
+## Mazda RX4 Wag   6
+## Datsun 710      4</pre>
+
+<p>With standard evaluation, this would fail as cyl doesn&#39;t exist.</p>
+
+</article></slide><slide class=''><hgroup><h2>Non-Standard Evalulation Issues</h2></hgroup><article  id="non-standard-evalulation-issues" class="smaller ">
+
+<p>While NSE can be extremely convienient, it causes problems when using non-interactively.</p>
+
+<pre class = 'prettyprint lang-r'>oops &lt;- function(var) {
+  mtcars %&gt;%
+    select(var)
+}
+
+oops(cyl)</pre>
+
+<pre >## Error in overscope_eval_next(overscope, expr): object &#39;cyl&#39; not found</pre>
+
+<p>This is where tidyeval comes in.</p>
+
+</article></slide><slide class=''><hgroup><h2>Tidyeval</h2></hgroup><article  id="tidyeval" class="smaller ">
+
+<ul>
+<li><p>Tidyeval is a toolkit for the tidyverse</p></li>
+<li><p>It was created to help get around the issues that NSE can cause</p></li>
+<li><p>Elegantly functionize dplyr code (other tidyverse packages will have support soon)</p></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Intro to BangBang</h2></hgroup><article  id="intro-to-bangbang" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>mtcars %&gt;%
+  select(2) %&gt;%
+  head(n=3)</pre>
+
+<pre >##               cyl
+## Mazda RX4       6
+## Mazda RX4 Wag   6
+## Datsun 710      4</pre>
+
+<pre class = 'prettyprint lang-r'>hp &lt;- 2
+
+mtcars %&gt;%
+  select(hp) %&gt;%
+  head(n=3)</pre>
+
+<pre >##                hp
+## Mazda RX4     110
+## Mazda RX4 Wag 110
+## Datsun 710     93</pre>
+
+</article></slide><slide class=''><hgroup><h2>Intro to BangBang</h2></hgroup><article  id="intro-to-bangbang-1" class="smaller ">
+
+<p>The <code>!!</code> operator, pronounced BangBang, tells R to evaluate the object prior to using it.</p>
+
+<pre class = 'prettyprint lang-r'>mtcars %&gt;%
+  select(!!hp) %&gt;%
+  head(n=3)</pre>
+
+<pre >##               cyl
+## Mazda RX4       6
+## Mazda RX4 Wag   6
+## Datsun 710      4</pre>
+
+</article></slide><slide class=''><hgroup><h2>Intro to BangBang</h2></hgroup><article  id="intro-to-bangbang-2" class="smaller ">
+
+<p><code>expr()</code> allows us to debug our tidyeval code, lets us see what R is trying to evaluate</p>
+
+<pre class = 'prettyprint lang-r'>expr(
+  mtcars %&gt;%
+    select(hp) %&gt;%
+    head(n=3)
+)</pre>
+
+<pre >## mtcars %&gt;% select(hp) %&gt;% head(n = 3)</pre>
+
+<pre class = 'prettyprint lang-r'>expr(
+  mtcars %&gt;%
+    select(!!hp) %&gt;%
+    head(n=3)
+)</pre>
+
+<pre >## mtcars %&gt;% select(2) %&gt;% head(n = 3)</pre>
+
+</article></slide><slide class=''><hgroup><h2>Intro to quo and sym</h2></hgroup><article  id="intro-to-quo-and-sym" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>mtcars %&gt;%
   filter(gear == 4) %&gt;%
@@ -190,7 +294,7 @@ head(mtcars)</pre>
 </tr>
 </table>
 
-</article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym-1" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Intro to quo and sym</h2></hgroup><article  id="intro-to-quo-and-sym-1" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>x &lt;- &quot;gear&quot;
 
@@ -212,7 +316,7 @@ mtcars %&gt;%
 
 <p>Filter ignores that x has an assigned value, &quot;gear&quot;. We would like x to be evaluated (replaced with &quot;gear&quot;) prior to being used by filter.</p>
 
-</article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym-2" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Intro to quo and sym</h2></hgroup><article  id="intro-to-quo-and-sym-2" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>mtcars %&gt;%
   filter((!!x) == 4) %&gt;%
@@ -230,11 +334,11 @@ mtcars %&gt;%
 
 <pre >## mtcars %&gt;% filter((&quot;gear&quot;) == 4) %&gt;% head(n = 3) %&gt;% kable()</pre>
 
-<p>!! makes R evaluate x a step before evaluating the whole expression</p>
+<p><code>!!</code> tells R to evaluate <code>x</code> a step before evaluating the whole expression</p>
 
 <p>However we don&#39;t want a string there, we want the object name to be a symbol.</p>
 
-</article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym-3" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Intro to quo and sym</h2></hgroup><article  id="intro-to-quo-and-sym-3" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>x &lt;- sym(&quot;gear&quot;)
 
@@ -298,7 +402,7 @@ mtcars %&gt;%
 </tr>
 </table>
 
-</article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym-4" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Intro to quo and sym</h2></hgroup><article  id="intro-to-quo-and-sym-4" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>expr(
   mtcars %&gt;%
@@ -309,7 +413,7 @@ mtcars %&gt;%
 
 <pre >## mtcars %&gt;% filter((gear) == 4) %&gt;% head(n = 3) %&gt;% kable()</pre>
 
-</article></slide><slide class=''><hgroup><h2>Basic intro to !! quo and sym</h2></hgroup><article  id="basic-intro-to-quo-and-sym-5" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Intro to quo and sym</h2></hgroup><article  id="intro-to-quo-and-sym-5" class="smaller ">
 
 <p>If we want our input to be plain text, not a string, use quo</p>
 
@@ -377,118 +481,94 @@ mtcars %&gt;%
 
 </article></slide><slide class=''><hgroup><h2>Definitions</h2></hgroup><article  id="definitions" class="smaller ">
 
-<p><code>!!</code>: The <code>!!</code> operator, or bangbang, tells R to evaluate the object prior to using it.</p>
+<p><code>!!</code>: tells R to evaluate the object prior to using it.</p>
 
 <p><code>sym()</code>: takes string input and converts to symbol</p>
 
-<p><code>quo()</code>: takes unquoted R code and returns expression ready to be evaluated</p>
+<p><code>quo()</code>: takes unquoted R code and returns a quosure ready to be evaluated</p>
+
+<p>quosure: a quosure is a quoted object that keeps track of an environment</p>
 
 <p><code>enquo()</code>: takes symbol referring to function argument, works similarly to <code>quo()</code></p>
 
 </article></slide><slide class=''><hgroup><h2>tl;dr</h2></hgroup><article  id="tldr" class="smaller ">
 
-<p>Outside function: sym and quo</p>
+<p><strong><em>Coding interactively</em></strong> (useful while building function): use <code>sym()</code> or <code>quo()</code></p>
 
-<p>Inside function: sym and enquo</p>
+<p><strong><em>Inside function</em></strong>: use <code>sym()</code> or <code>enquo()</code></p>
 
 </article></slide><slide class=''><hgroup><h2>Enquo and sym example</h2></hgroup><article  id="enquo-and-sym-example" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>mtcars %&gt;% 
-  count(cyl) %&gt;% 
-  mutate(prop = n / sum(n)) %&gt;%
+  select(cyl) %&gt;% 
+  head(n=3) %&gt;%
   kable()</pre>
 
 <table class = 'rmdtable'>
 <tr class="header">
+<th align="left"></th>
 <th align="right">cyl</th>
-<th align="right">n</th>
-<th align="right">prop</th>
 </tr>
 <tr class="odd">
-<td align="right">4</td>
-<td align="right">11</td>
-<td align="right">0.34375</td>
+<td align="left">Mazda RX4</td>
+<td align="right">6</td>
 </tr>
 <tr class="even">
+<td align="left">Mazda RX4 Wag</td>
 <td align="right">6</td>
-<td align="right">7</td>
-<td align="right">0.21875</td>
 </tr>
 <tr class="odd">
-<td align="right">8</td>
-<td align="right">14</td>
-<td align="right">0.43750</td>
+<td align="left">Datsun 710</td>
+<td align="right">4</td>
 </tr>
 </table>
 
 </article></slide><slide class=''><hgroup><h2>Enquo and sym example</h2></hgroup><article  id="enquo-and-sym-example-1" class="smaller ">
 
-<pre class = 'prettyprint lang-r'>categorical_summary &lt;- function(df, count_var) {
+<pre class = 'prettyprint lang-r'>categorical_summary &lt;- function(df, select_var) {
 
-  count_var &lt;- enquo(count_var)
+  select_var &lt;- enquo(select_var)
   
   df %&gt;% 
-    count(!!count_var) %&gt;%
-    mutate(prop = n / sum(n)) %&gt;%
+    select(!!select_var) %&gt;% 
+    head(n=3) %&gt;%
     kable()
   
-}</pre>
+}
 
-</article></slide><slide class=''><hgroup><h2>Enquo and sym example</h2></hgroup><article  id="enquo-and-sym-example-2" class="smaller ">
-
-<pre class = 'prettyprint lang-r'>mtcars %&gt;% 
+mtcars %&gt;% 
   categorical_summary(cyl)</pre>
 
 <table class = 'rmdtable'>
 <tr class="header">
+<th align="left"></th>
 <th align="right">cyl</th>
-<th align="right">n</th>
-<th align="right">prop</th>
 </tr>
 <tr class="odd">
-<td align="right">4</td>
-<td align="right">11</td>
-<td align="right">0.34375</td>
+<td align="left">Mazda RX4</td>
+<td align="right">6</td>
 </tr>
 <tr class="even">
+<td align="left">Mazda RX4 Wag</td>
 <td align="right">6</td>
-<td align="right">7</td>
-<td align="right">0.21875</td>
 </tr>
 <tr class="odd">
-<td align="right">8</td>
-<td align="right">14</td>
-<td align="right">0.43750</td>
+<td align="left">Datsun 710</td>
+<td align="right">4</td>
 </tr>
 </table>
 
-<pre class = 'prettyprint lang-r'>mtcars %&gt;% 
-  categorical_summary(&quot;cyl&quot;)</pre>
+</article></slide><slide class=''><hgroup><h2>Enquo and sym example</h2></hgroup><article  id="enquo-and-sym-example-2" class="smaller ">
 
-<table class = 'rmdtable'>
-<tr class="header">
-<th align="left">&quot;cyl&quot;</th>
-<th align="right">n</th>
-<th align="right">prop</th>
-</tr>
-<tr class="odd">
-<td align="left">cyl</td>
-<td align="right">32</td>
-<td align="right">1</td>
-</tr>
-</table>
-
-</article></slide><slide class=''><hgroup><h2>Enquo and sym example</h2></hgroup><article  id="enquo-and-sym-example-3" class="smaller ">
-
-<pre class = 'prettyprint lang-r'>categorical_summary_string &lt;- function(df, count_var) {
+<pre class = 'prettyprint lang-r'>categorical_summary_string &lt;- function(df, select_var) {
   
-  count_var &lt;- sym(count_var)
+  select_var &lt;- sym(select_var)
   
   df %&gt;% 
-    count(!!count_var) %&gt;%
-    mutate(prop = n / sum(n)) %&gt;%
+    select(!!select_var) %&gt;% 
+    head(n=3) %&gt;%
     kable()
-  
+
 }
 
 mtcars %&gt;% 
@@ -496,24 +576,20 @@ mtcars %&gt;%
 
 <table class = 'rmdtable'>
 <tr class="header">
+<th align="left"></th>
 <th align="right">cyl</th>
-<th align="right">n</th>
-<th align="right">prop</th>
 </tr>
 <tr class="odd">
-<td align="right">4</td>
-<td align="right">11</td>
-<td align="right">0.34375</td>
+<td align="left">Mazda RX4</td>
+<td align="right">6</td>
 </tr>
 <tr class="even">
+<td align="left">Mazda RX4 Wag</td>
 <td align="right">6</td>
-<td align="right">7</td>
-<td align="right">0.21875</td>
 </tr>
 <tr class="odd">
-<td align="right">8</td>
-<td align="right">14</td>
-<td align="right">0.43750</td>
+<td align="left">Datsun 710</td>
+<td align="right">4</td>
 </tr>
 </table>
 
@@ -544,56 +620,11 @@ mtcars %&gt;%
 </tr>
 </table>
 
-<p>Goal is to functionize replacing everything with arguments</p>
+<p>Goal is to functionize replacing everything with arguments.</p>
 
-<p>We&#39;ll start trying to replace cyl with group_var</p>
+<p>We&#39;ll start by trying to replace cyl.</p>
 
 </article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-1" class="smaller ">
-
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, group_var) {
-  
-  df %&gt;%
-    filter(vs == 0) %&gt;%
-    group_by(group_var) %&gt;%
-    summarise(hp = mean(hp)) %&gt;%
-    kable()
-  
-}
-
-summariser(mtcars, cyl)</pre>
-
-<pre >## Error in grouped_df_impl(data, unname(vars), drop): Column `group_var` is unknown</pre>
-
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-2" class="smaller ">
-
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, group_var) {
-  expr(
-    df %&gt;%
-      filter(vs == 0) %&gt;%
-      group_by(group_var) %&gt;%
-      summarise(hp = mean(hp)) %&gt;%
-      kable()
-  )
-}
-
-summariser(mtcars, cyl)</pre>
-
-<pre >## df %&gt;% filter(vs == 0) %&gt;% group_by(group_var) %&gt;% summarise(hp = mean(hp)) %&gt;% 
-##     kable()</pre>
-
-<p>It tries to group by &quot;group_var&quot;, where we want it to group by the user specified &quot;cyl&quot;.</p>
-
-<p>group_by (and other dplyr verbs) does not evaluate the input, it quotes it and then uses the quoted object.</p>
-
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-3" class="smaller ">
-
-<p>We need to quote the input ourselves and then tell group_by to evaluate it prior to using it</p>
-
-<p>enquo takes a symbol refering to a fuction argument, and returns a quosure with the R code that was supplied by the user to this argument.</p>
-
-<p>!! tells group_by to evaluate (unquote) group_var before using it</p>
-
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-4" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>summariser &lt;- function(df, group_var) {
   
@@ -628,37 +659,17 @@ summariser(mtcars, cyl)</pre>
 </tr>
 </table>
 
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-5" class="smaller ">
-
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, group_var) {
-  
-  group_var &lt;- enquo(group_var)
-  
-  expr(  
-    df %&gt;%
-      filter(vs == 0) %&gt;%
-      group_by(!!group_var) %&gt;%
-      summarise(hp = mean(hp))  %&gt;%
-      kable()
-  )
-  
-}
-
-summariser(mtcars, cyl)</pre>
-
-<pre >## df %&gt;% filter(vs == 0) %&gt;% group_by(~cyl) %&gt;% summarise(hp = mean(hp)) %&gt;% 
-##     kable()</pre>
-
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-6" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-2" class="smaller ">
 
 <p>We can also use quosures to assign an expression directly to an argument</p>
 
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, expression, group_var) {
+<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, filter_expression, group_var) {
+  
+  filter_expression &lt;- enquo(filter_expression)
   group_var &lt;- enquo(group_var)
-  expression &lt;- enquo(expression)
 
   df %&gt;%
-    filter(!!expression) %&gt;%
+    filter(!!filter_expression) %&gt;%
     group_by(!!group_var) %&gt;%
     summarise(hp = mean(hp)) %&gt;%
     kable() 
@@ -686,16 +697,16 @@ summariser(mtcars, vs == 0, cyl)</pre>
 </tr>
 </table>
 
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-7" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-3" class="smaller ">
 
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, expression, group_var, summary_var) {
+<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, filter_expression, group_var, summary_var) {
   
+  filter_expression &lt;- enquo(filter_expression)
   group_var &lt;- enquo(group_var)
   summary_var &lt;- enquo(summary_var)
-  expression &lt;- enquo(expression)
   
   df %&gt;%
-    filter(!!expression) %&gt;%
+    filter(!!filter_expression) %&gt;%
     group_by(!!group_var) %&gt;%
     summarise(x = mean(!!summary_var)) %&gt;%
     kable() 
@@ -723,16 +734,16 @@ summariser(mtcars, vs == 0, cyl, hp)</pre>
 </tr>
 </table>
 
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-8" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-4" class="smaller ">
 
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, expression, group_var, summary_var) {
+<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, filter_expression, group_var, summary_var) {
   
+  filter_expression &lt;- enquo(filter_expression)
   group_var &lt;- enquo(group_var)
   summary_var &lt;- enquo(summary_var)
-  expression &lt;- enquo(expression)
   
   df %&gt;%
-    filter(!!expression) %&gt;%
+    filter(!!filter_expression) %&gt;%
     group_by(!!group_var) %&gt;%
     summarise(!!summary_var = mean(!!summary_var)) %&gt;%
     kable() 
@@ -744,18 +755,24 @@ summariser(mtcars, vs == 0, cyl, hp)</pre>
 ## 10:     summarise(!!summary_var =
 ##                                 ^</pre>
 
-<p><code>!!summary_var = mean(!!summary_var)</code> is not valid R code, need to use <code>:=</code> operator to unquote on both RHS and LHS</p>
+<p><code>!!summary_var = mean(!!summary_var)</code> is not valid R code, the `<code>=</code>` operator can only have object names on the LHS. We need to use `<code>:=</code>` operator to unquote on both RHS and LHS.</p>
 
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-9" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Definitions</h2></hgroup><article  id="definitions-1" class="smaller ">
 
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, expression, group_var, summary_var) {
+<p>`<code>:=</code>`: bundles expressions on both the LHS and RHS.</p>
+
+<p><code>quo_name()</code>: converts quoted symbol to string</p>
+
+</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-5" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, filter_expression, group_var, summary_var) {
   
+  filter_expression &lt;- enquo(filter_expression)
   group_var &lt;- enquo(group_var)
   summary_var &lt;- enquo(summary_var)
-  expression &lt;- enquo(expression)
   
     df %&gt;%
-      filter(!!expression) %&gt;%
+      filter(!!filter_expression) %&gt;%
       group_by(!!group_var) %&gt;%
       summarise(!!summary_var := mean(!!summary_var)) %&gt;%
       kable()
@@ -766,39 +783,16 @@ summariser(mtcars, vs == 0, cyl, hp)</pre>
 
 <pre >## Error: LHS must be a name or string</pre>
 
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-10" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-6" class="smaller ">
 
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, expression, group_var, summary_var) {
+<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, filter_expression, group_var, summary_var) {
   
+  filter_expression &lt;- enquo(filter_expression)
   group_var &lt;- enquo(group_var)
   summary_var &lt;- enquo(summary_var)
-  expression &lt;- enquo(expression)
-  
-  expr(
-    df %&gt;%
-      filter(!!expression) %&gt;%
-      group_by(!!group_var) %&gt;%
-      summarise(!!summary_var := mean(!!summary_var) %&gt;%
-      kable())
-  )
-  
-}
-
-summariser(mtcars, vs == 0, cyl, hp)</pre>
-
-<pre >## df %&gt;% filter(~vs == 0) %&gt;% group_by(~cyl) %&gt;% summarise(`:=`(~hp, 
-##     mean(~hp) %&gt;% kable()))</pre>
-
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-11" class="smaller ">
-
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, expression, group_var, summary_var) {
-  
-  group_var &lt;- enquo(group_var)
-  summary_var &lt;- enquo(summary_var)
-  expression &lt;- enquo(expression)
   
   df %&gt;%
-    filter(!!expression) %&gt;%
+    filter(!!filter_expression) %&gt;%
     group_by(!!group_var) %&gt;%
     summarise(!!quo_name(summary_var) := mean(!!summary_var)) %&gt;%
     kable()
@@ -826,89 +820,80 @@ summariser(mtcars, vs == 0, cyl, hp)</pre>
 </tr>
 </table>
 
-</article></slide><slide class=''><hgroup><h2>Bigger Example</h2></hgroup><article  id="bigger-example-12" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Definitions</h2></hgroup><article  id="definitions-2" class="smaller ">
 
-<pre class = 'prettyprint lang-r'>summariser &lt;- function(df, expression, group_var, summary_var) {
-  
-  group_var &lt;- enquo(group_var)
-  summary_var &lt;- enquo(summary_var)
-  expression &lt;- enquo(expression)
-  
-  expr(  
-    df %&gt;%
-      filter(!!expression) %&gt;%
-      group_by(!!group_var) %&gt;%
-      summarise(!!quo_name(summary_var) := mean(!!summary_var)) %&gt;%
-      kable()
-  )
-  
-}
+<p><code>syms()</code>: takes a list of strings and converts to list of symbols</p>
 
-summariser(mtcars, vs == 0, cyl, hp)</pre>
+<p><code>quos()</code>: takes a list of expressions and returns list of quosures</p>
 
-<pre >## df %&gt;% filter(~vs == 0) %&gt;% group_by(~cyl) %&gt;% summarise(`:=`(&quot;hp&quot;, 
-##     mean(~hp))) %&gt;% kable()</pre>
+<p><code>!!!</code>: unquotes each element of list, each component is embedded as its own argument in surrounding call</p>
 
-<p>The quo_name function replaces the quosure ~hp with &quot;hp&quot;</p>
-
-</article></slide><slide class=''><hgroup><h2>Quos example</h2></hgroup><article  id="quos-example" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Quos, syms, !!! example</h2></hgroup><article  id="quos-syms-example" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>g &lt;- c(&quot;gear&quot;, &quot;cyl&quot;)
 
-multiple_group &lt;- function(df, val_var, ...) {
+multiple_group &lt;- function(df, group_vars, val_var) {
   
+  group_vars &lt;- syms(group_vars)
   val_var &lt;- enquo(val_var)
-  groupings &lt;- syms(groupings)
   
   df %&gt;%
-    group_by(!!!groupings) %&gt;%
-    summarise(mean(!!val_var))
+    group_by(!!!group_vars) %&gt;%
+    summarise(mean(!!val_var)) %&gt;%
+    head(n=3) %&gt;%
+    kable()
   
-}
+}</pre>
 
-multiple_group(mtcars, g, hp)</pre>
+</article></slide><slide class=''><hgroup><h2>Quos, syms, !!! example</h2></hgroup><article  id="quos-syms-example-1" class="smaller ">
 
-<pre >## Error in lapply(.x, .f, ...): object &#39;groupings&#39; not found</pre>
+<pre class = 'prettyprint lang-r'>multiple_group(mtcars, g, hp)</pre>
 
-</article></slide><slide class=''><hgroup><h2>Quos example</h2></hgroup><article  id="quos-example-1" class="smaller ">
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="right">gear</th>
+<th align="right">cyl</th>
+<th align="right">mean(hp)</th>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">97.0000</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">107.5000</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">8</td>
+<td align="right">194.1667</td>
+</tr>
+</table>
 
-<pre class = 'prettyprint lang-r'>g1 &lt;- c(&quot;gear&quot;, &quot;cyl&quot;)
-g2 &lt;- c(&quot;gear&quot;)
+<pre class = 'prettyprint lang-r'>multiple_group(mtcars, &quot;gear&quot;, hp)</pre>
 
-multiple_group &lt;- function(df, val_var, groupings) {
-  
-  val_var &lt;- enquo(val_var)
-  groupings &lt;- syms(groupings)
-  
-  df %&gt;%
-    group_by(!!!groupings) %&gt;%
-    summarise(mean(!!val_var))
-  
-}
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="right">gear</th>
+<th align="right">mean(hp)</th>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">176.1333</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">89.5000</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">195.6000</td>
+</tr>
+</table>
 
-multiple_group(mtcars, hp, g1)</pre>
-
-<pre >## # A tibble: 8 x 3
-## # Groups:   gear [?]
-##    gear   cyl `mean(hp)`
-##   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
-## 1     3     4    97.0000
-## 2     3     6   107.5000
-## 3     3     8   194.1667
-## 4     4     4    76.0000
-## 5     4     6   116.5000
-## 6     5     4   102.0000
-## 7     5     6   175.0000
-## 8     5     8   299.5000</pre>
-
-<pre class = 'prettyprint lang-r'>multiple_group(mtcars, hp, g2)</pre>
-
-<pre >## # A tibble: 3 x 2
-##    gear `mean(hp)`
-##   &lt;dbl&gt;      &lt;dbl&gt;
-## 1     3   176.1333
-## 2     4    89.5000
-## 3     5   195.6000</pre>
+</article></slide><slide class=''><hgroup><h2>Quos, syms, !!! example</h2></hgroup><article  id="quos-syms-example-2" class="smaller ">
 
 <pre class = 'prettyprint lang-r'>multiple_group &lt;- function(df, val_var, ...) {
   
@@ -917,33 +902,59 @@ multiple_group(mtcars, hp, g1)</pre>
   
   df %&gt;%
     group_by(!!!groupings) %&gt;%
-    summarise(mean(!!val_var))
+    summarise(mean(!!val_var)) %&gt;%
+    head(n=3) %&gt;%
+    kable()
   
-}
+}</pre>
 
-multiple_group(mtcars, hp, gear)</pre>
+</article></slide><slide class=''><hgroup><h2>Quos, syms, !!! example</h2></hgroup><article  id="quos-syms-example-3" class="smaller ">
 
-<pre >## # A tibble: 3 x 2
-##    gear `mean(hp)`
-##   &lt;dbl&gt;      &lt;dbl&gt;
-## 1     3   176.1333
-## 2     4    89.5000
-## 3     5   195.6000</pre>
+<pre class = 'prettyprint lang-r'>multiple_group(mtcars, hp, gear)</pre>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="right">gear</th>
+<th align="right">mean(hp)</th>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">176.1333</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">89.5000</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">195.6000</td>
+</tr>
+</table>
 
 <pre class = 'prettyprint lang-r'>multiple_group(mtcars, hp, gear, cyl)</pre>
 
-<pre >## # A tibble: 8 x 3
-## # Groups:   gear [?]
-##    gear   cyl `mean(hp)`
-##   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
-## 1     3     4    97.0000
-## 2     3     6   107.5000
-## 3     3     8   194.1667
-## 4     4     4    76.0000
-## 5     4     6   116.5000
-## 6     5     4   102.0000
-## 7     5     6   175.0000
-## 8     5     8   299.5000</pre>
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="right">gear</th>
+<th align="right">cyl</th>
+<th align="right">mean(hp)</th>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">97.0000</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">107.5000</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">8</td>
+<td align="right">194.1667</td>
+</tr>
+</table>
 
 </article></slide><slide class=''><hgroup><h2>Quos example 2</h2></hgroup><article  id="quos-example-2" class="smaller ">
 
@@ -1050,7 +1061,38 @@ multiple_group(mtcars, hp, gear)</pre>
 <td align="left">B</td>
 <td align="right">9.5</td>
 </tr>
-</table></article></slide>
+</table>
+
+</article></slide><slide class=''><hgroup><h2>Allow either string or expression</h2></hgroup><article  id="allow-either-string-or-expression" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>group_either &lt;- function(var) {
+  var &lt;- as.character(substitute(var))
+  var &lt;- sym(var)
+  
+  mtcars %&gt;%
+    group_by(!!var) %&gt;%
+    summarise(mean(hp))
+}</pre>
+
+</article></slide><slide class=''><hgroup><h2>Allow either string or expression</h2></hgroup><article  id="allow-either-string-or-expression-1" class="smaller ">
+
+<pre class = 'prettyprint lang-r'>group_either(cyl)</pre>
+
+<pre >## # A tibble: 3 x 2
+##     cyl `mean(hp)`
+##   &lt;dbl&gt;      &lt;dbl&gt;
+## 1     4   82.63636
+## 2     6  122.28571
+## 3     8  209.21429</pre>
+
+<pre class = 'prettyprint lang-r'>group_either(&quot;cyl&quot;)</pre>
+
+<pre >## # A tibble: 3 x 2
+##     cyl `mean(hp)`
+##   &lt;dbl&gt;      &lt;dbl&gt;
+## 1     4   82.63636
+## 2     6  122.28571
+## 3     8  209.21429</pre></article></slide>
 
 
   <slide class="backdrop"></slide>

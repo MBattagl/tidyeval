@@ -26,8 +26,99 @@ data(mtcars)
 head(mtcars)
 ```
 
+## Important Concepts
 
-## Basic intro to !! quo and sym
+- Standard vs Non-Standard Evalulation
+
+- Quosures
+
+## Standard vs Non-Standard Evalulation
+
+Standard evaluation: R passes arguments by value. 
+
+Non-standard evaluation (NSE): Catch-all term that means anything other than standard evaluation.
+
+Dplyr NSE: Allows objects that do not exist in global environment as inputs. 
+
+```{r}
+mtcars %>%
+  select(cyl) %>%
+  head(n=3)
+```
+
+With standard evaluation, this would fail as cyl doesn't exist.
+
+## Non-Standard Evalulation Issues
+
+While NSE can be extremely convienient, it causes problems when using non-interactively. 
+
+```{r}
+oops <- function(var) {
+  mtcars %>%
+    select(var)
+}
+
+oops(cyl)
+```
+
+This is where tidyeval comes in.
+
+## Tidyeval
+
+- Tidyeval is a toolkit for the tidyverse
+
+- It was created to help get around the issues that NSE can cause 
+
+- Elegantly functionize dplyr code (other tidyverse packages will have support soon)
+
+
+## Intro to BangBang
+
+```{r}
+mtcars %>%
+  select(2) %>%
+  head(n=3)
+```
+
+```{r}
+hp <- 2
+
+mtcars %>%
+  select(hp) %>%
+  head(n=3)
+```
+
+## Intro to BangBang
+
+The `!!` operator, pronounced BangBang, tells R to evaluate the object prior to using it. 
+
+```{r}
+mtcars %>%
+  select(!!hp) %>%
+  head(n=3)
+```
+
+## Intro to BangBang
+
+`expr()` allows us to debug our tidyeval code, lets us see what R is trying to evaluate
+
+```{r}
+expr(
+  mtcars %>%
+    select(hp) %>%
+    head(n=3)
+)
+```
+
+```{r}
+expr(
+  mtcars %>%
+    select(!!hp) %>%
+    head(n=3)
+)
+```
+
+## Intro to quo and sym
 
 ```{r}
 mtcars %>%
@@ -36,7 +127,7 @@ mtcars %>%
   kable()
 ```
 
-## Basic intro to !! quo and sym
+## Intro to quo and sym
 
 ```{r}
 x <- "gear"
@@ -56,7 +147,7 @@ expr(
 
 Filter ignores that x has an assigned value, "gear". We would like x to be evaluated (replaced with "gear") prior to being used by filter.
 
-## Basic intro to !! quo and sym
+## Intro to quo and sym
 
 ```{r}
 mtcars %>%
@@ -72,11 +163,11 @@ expr(
 )
 ```
 
-!! makes R evaluate x a step before evaluating the whole expression
+`!!` tells R to evaluate `x` a step before evaluating the whole expression
 
 However we don't want a string there, we want the object name to be a symbol. 
 
-## Basic intro to !! quo and sym
+## Intro to quo and sym
 
 ```{r}
 x <- sym("gear")
@@ -87,7 +178,7 @@ mtcars %>%
   kable()
 ```
 
-## Basic intro to !! quo and sym
+## Intro to quo and sym
 
 ```{r}
 expr(
@@ -98,7 +189,7 @@ expr(
 )
 ```
 
-## Basic intro to !! quo and sym
+## Intro to quo and sym
 
 If we want our input to be plain text, not a string, use quo
 
@@ -114,66 +205,61 @@ mtcars %>%
 
 ## Definitions
 
-`!!`: The `!!` operator, or bangbang, tells R to evaluate the object prior to using it. 
+`!!`: tells R to evaluate the object prior to using it.
 
 `sym()`: takes string input and converts to symbol
 
-`quo()`: takes unquoted R code and returns expression ready to be evaluated
+`quo()`: takes unquoted R code and returns a quosure ready to be evaluated
+
+quosure: a quosure is a quoted object that keeps track of an environment
 
 `enquo()`: takes symbol referring to function argument, works similarly to `quo()`
 
 ## tl;dr
 
-Outside function: sym and quo
+***Coding interactively*** (useful while building function): use `sym()` or `quo()`
 
-Inside function: sym and enquo
+***Inside function***: use `sym()` or `enquo()`
 
 ## Enquo and sym example
 
 ```{r}
 mtcars %>% 
-  count(cyl) %>% 
-  mutate(prop = n / sum(n)) %>%
+  select(cyl) %>% 
+  head(n=3) %>%
   kable()
 ```
 
 ## Enquo and sym example
 
 ```{r}
-categorical_summary <- function(df, count_var) {
+categorical_summary <- function(df, select_var) {
 
-  count_var <- enquo(count_var)
+  select_var <- enquo(select_var)
   
   df %>% 
-    count(!!count_var) %>%
-    mutate(prop = n / sum(n)) %>%
+    select(!!select_var) %>% 
+    head(n=3) %>%
     kable()
   
 }
-```
 
-## Enquo and sym example
-
-```{r}
 mtcars %>% 
   categorical_summary(cyl)
-
-mtcars %>% 
-  categorical_summary("cyl")
 ```
 
 ## Enquo and sym example
 
 ```{r}
-categorical_summary_string <- function(df, count_var) {
+categorical_summary_string <- function(df, select_var) {
   
-  count_var <- sym(count_var)
+  select_var <- sym(select_var)
   
   df %>% 
-    count(!!count_var) %>%
-    mutate(prop = n / sum(n)) %>%
+    select(!!select_var) %>% 
+    head(n=3) %>%
     kable()
-  
+
 }
 
 mtcars %>% 
@@ -190,53 +276,9 @@ mtcars %>%
   kable()
 ```
 
-Goal is to functionize replacing everything with arguments
+Goal is to functionize replacing everything with arguments.
 
-We'll start trying to replace cyl with group_var
-
-## Bigger Example
-
-```{r}
-summariser <- function(df, group_var) {
-  
-  df %>%
-    filter(vs == 0) %>%
-    group_by(group_var) %>%
-    summarise(hp = mean(hp)) %>%
-    kable()
-  
-}
-
-summariser(mtcars, cyl)
-```
-
-## Bigger Example
-
-```{r}
-summariser <- function(df, group_var) {
-  expr(
-    df %>%
-      filter(vs == 0) %>%
-      group_by(group_var) %>%
-      summarise(hp = mean(hp)) %>%
-      kable()
-  )
-}
-
-summariser(mtcars, cyl)
-```
-
-It tries to group by "group_var", where we want it to group by the user specified "cyl". 
-
-group_by (and other dplyr verbs) does not evaluate the input, it quotes it and then uses the quoted object.
-
-## Bigger Example
-
-We need to quote the input ourselves and then tell group_by to evaluate it prior to using it
-
-enquo takes a symbol refering to a fuction argument, and returns a quosure with the R code that was supplied by the user to this argument. 
-
-!! tells group_by to evaluate (unquote) group_var before using it 
+We'll start by trying to replace cyl.
 
 ## Bigger Example
 
@@ -256,38 +298,18 @@ summariser <- function(df, group_var) {
 summariser(mtcars, cyl)
 ```
 
-
-## Bigger Example
-
-```{r}
-summariser <- function(df, group_var) {
-  
-  group_var <- enquo(group_var)
-  
-  expr(  
-    df %>%
-      filter(vs == 0) %>%
-      group_by(!!group_var) %>%
-      summarise(hp = mean(hp))  %>%
-      kable()
-  )
-  
-}
-
-summariser(mtcars, cyl)
-```
-
 ## Bigger Example
 
 We can also use quosures to assign an expression directly to an argument
 
 ```{r}
-summariser <- function(df, expression, group_var) {
+summariser <- function(df, filter_expression, group_var) {
+  
+  filter_expression <- enquo(filter_expression)
   group_var <- enquo(group_var)
-  expression <- enquo(expression)
 
   df %>%
-    filter(!!expression) %>%
+    filter(!!filter_expression) %>%
     group_by(!!group_var) %>%
     summarise(hp = mean(hp)) %>%
     kable() 
@@ -300,14 +322,14 @@ summariser(mtcars, vs == 0, cyl)
 ## Bigger Example
 
 ```{r}
-summariser <- function(df, expression, group_var, summary_var) {
+summariser <- function(df, filter_expression, group_var, summary_var) {
   
+  filter_expression <- enquo(filter_expression)
   group_var <- enquo(group_var)
   summary_var <- enquo(summary_var)
-  expression <- enquo(expression)
   
   df %>%
-    filter(!!expression) %>%
+    filter(!!filter_expression) %>%
     group_by(!!group_var) %>%
     summarise(x = mean(!!summary_var)) %>%
     kable() 
@@ -320,14 +342,14 @@ summariser(mtcars, vs == 0, cyl, hp)
 ## Bigger Example
 
 ```{r}
-summariser <- function(df, expression, group_var, summary_var) {
+summariser <- function(df, filter_expression, group_var, summary_var) {
   
+  filter_expression <- enquo(filter_expression)
   group_var <- enquo(group_var)
   summary_var <- enquo(summary_var)
-  expression <- enquo(expression)
   
   df %>%
-    filter(!!expression) %>%
+    filter(!!filter_expression) %>%
     group_by(!!group_var) %>%
     summarise(!!summary_var = mean(!!summary_var)) %>%
     kable() 
@@ -335,19 +357,25 @@ summariser <- function(df, expression, group_var, summary_var) {
 }
 ```
 
-`!!summary_var = mean(!!summary_var)` is not valid R code, need to use `:=` operator to unquote on both RHS and LHS
+`!!summary_var = mean(!!summary_var)` is not valid R code, the \``=`\` operator can only have object names on the LHS. We need to use \``:=`\` operator to unquote on both RHS and LHS.
+
+## Definitions
+
+\``:=`\`: bundles expressions on both the LHS and RHS. 
+
+`quo_name()`: converts quoted symbol to string
 
 ## Bigger Example
 
 ```{r}
-summariser <- function(df, expression, group_var, summary_var) {
+summariser <- function(df, filter_expression, group_var, summary_var) {
   
+  filter_expression <- enquo(filter_expression)
   group_var <- enquo(group_var)
   summary_var <- enquo(summary_var)
-  expression <- enquo(expression)
   
     df %>%
-      filter(!!expression) %>%
+      filter(!!filter_expression) %>%
       group_by(!!group_var) %>%
       summarise(!!summary_var := mean(!!summary_var)) %>%
       kable()
@@ -360,36 +388,14 @@ summariser(mtcars, vs == 0, cyl, hp)
 ## Bigger Example
 
 ```{r}
-summariser <- function(df, expression, group_var, summary_var) {
+summariser <- function(df, filter_expression, group_var, summary_var) {
   
+  filter_expression <- enquo(filter_expression)
   group_var <- enquo(group_var)
   summary_var <- enquo(summary_var)
-  expression <- enquo(expression)
-  
-  expr(
-    df %>%
-      filter(!!expression) %>%
-      group_by(!!group_var) %>%
-      summarise(!!summary_var := mean(!!summary_var) %>%
-      kable())
-  )
-  
-}
-
-summariser(mtcars, vs == 0, cyl, hp)
-```
-
-## Bigger Example
-
-```{r}
-summariser <- function(df, expression, group_var, summary_var) {
-  
-  group_var <- enquo(group_var)
-  summary_var <- enquo(summary_var)
-  expression <- enquo(expression)
   
   df %>%
-    filter(!!expression) %>%
+    filter(!!filter_expression) %>%
     group_by(!!group_var) %>%
     summarise(!!quo_name(summary_var) := mean(!!summary_var)) %>%
     kable()
@@ -399,74 +405,45 @@ summariser <- function(df, expression, group_var, summary_var) {
 summariser(mtcars, vs == 0, cyl, hp)
 ```
 
-## Bigger Example
+## Definitions
 
-```{r}
-summariser <- function(df, expression, group_var, summary_var) {
-  
-  group_var <- enquo(group_var)
-  summary_var <- enquo(summary_var)
-  expression <- enquo(expression)
-  
-  expr(  
-    df %>%
-      filter(!!expression) %>%
-      group_by(!!group_var) %>%
-      summarise(!!quo_name(summary_var) := mean(!!summary_var)) %>%
-      kable()
-  )
-  
-}
+`syms()`: takes a list of strings and converts to list of symbols
 
-summariser(mtcars, vs == 0, cyl, hp)
-```
+`quos()`: takes a list of expressions and returns list of quosures
 
-The quo_name function replaces the quosure ~hp with "hp"
+`!!!`: unquotes each element of list, each component is embedded as its own argument in surrounding call
 
-## Quos example
+## Quos, syms, !!! example
 
 ```{r}
 
 g <- c("gear", "cyl")
 
-multiple_group <- function(df, val_var, ...) {
+multiple_group <- function(df, group_vars, val_var) {
   
+  group_vars <- syms(group_vars)
   val_var <- enquo(val_var)
-  groupings <- syms(groupings)
   
   df %>%
-    group_by(!!!groupings) %>%
-    summarise(mean(!!val_var))
+    group_by(!!!group_vars) %>%
+    summarise(mean(!!val_var)) %>%
+    head(n=3) %>%
+    kable()
   
 }
 
-multiple_group(mtcars, g, hp)
-
 ```
 
-## Quos example
+## Quos, syms, !!! example
 
 ```{r}
 
-g1 <- c("gear", "cyl")
-g2 <- c("gear")
-
-multiple_group <- function(df, val_var, groupings) {
-  
-  val_var <- enquo(val_var)
-  groupings <- syms(groupings)
-  
-  df %>%
-    group_by(!!!groupings) %>%
-    summarise(mean(!!val_var))
-  
-}
-
-multiple_group(mtcars, hp, g1)
-multiple_group(mtcars, hp, g2)
+multiple_group(mtcars, g, hp)
+multiple_group(mtcars, "gear", hp)
 
 ```
 
+## Quos, syms, !!! example
 
 ```{r}
 multiple_group <- function(df, val_var, ...) {
@@ -476,15 +453,20 @@ multiple_group <- function(df, val_var, ...) {
   
   df %>%
     group_by(!!!groupings) %>%
-    summarise(mean(!!val_var))
+    summarise(mean(!!val_var)) %>%
+    head(n=3) %>%
+    kable()
   
 }
+```
 
+## Quos, syms, !!! example
+
+```{r}
 multiple_group(mtcars, hp, gear)
 multiple_group(mtcars, hp, gear, cyl)
 
 ```
-
 
 ## Quos example 2
 
@@ -523,3 +505,22 @@ grouped_mean(example, group, val, trim = .2)
 grouped_mean(example, group, val, na.rm = TRUE, trim = .2)
 ```
 
+## Allow either string or expression
+
+```{r}
+group_either <- function(var) {
+  var <- as.character(substitute(var))
+  var <- sym(var)
+  
+  mtcars %>%
+    group_by(!!var) %>%
+    summarise(mean(hp))
+}
+```
+
+## Allow either string or expression
+
+```{r}
+group_either(cyl)
+group_either("cyl")
+```
